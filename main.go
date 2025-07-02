@@ -4,6 +4,7 @@ import (
 	"context"
 	"kredit-plus/config"
 	"kredit-plus/database"
+	"kredit-plus/internal"
 	"kredit-plus/logger"
 )
 
@@ -16,9 +17,5 @@ func init() {
 }
 
 func main() {
-	log := logger.Get("main")
-	log.Info().Msgf("Starting Kredit Plus Service with config: %+v", config.Get())
-
-	db := database.Get()
-	log.Info().Msgf("Database connection established: %v", db != nil)
+	internal.Run()
 }
