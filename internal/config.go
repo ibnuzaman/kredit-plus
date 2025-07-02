@@ -2,6 +2,7 @@ package internal
 
 import (
 	"kredit-plus/config"
+	"kredit-plus/exception"
 	"strings"
 
 	"github.com/gofiber/contrib/fiberzerolog"
@@ -12,6 +13,7 @@ import (
 
 func fiberConfig(conf *config.Config) fiber.Config {
 	return fiber.Config{
+		ErrorHandler:                 exception.ErrorHandler,
 		BodyLimit:                    10 * 1024 * 1024, // 10 MB
 		StreamRequestBody:            true,
 		DisablePreParseMultipartForm: true,

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"kredit-plus/config"
+	"kredit-plus/internal/model"
 	"kredit-plus/logger"
 	"log"
 	"os"
@@ -73,7 +74,7 @@ func Init(ctx context.Context, conf *config.Config) {
 
 func autoMigrate(db *gorm.DB, log *zerolog.Logger) {
 	log.Info().Msg("Auto migrating database schemas")
-	err := db.AutoMigrate()
+	err := db.AutoMigrate(model.Customer{})
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to auto migrate database schemas")
 		return
