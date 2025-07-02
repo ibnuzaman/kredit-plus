@@ -1,14 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"kredit-plus/config"
+	"kredit-plus/logger"
 )
 
 func init() {
 	config.Init()
+	conf := config.Get()
+	logger.Init(conf)
 }
 
 func main() {
-	fmt.Println("Welcome to Kredit Plus!")
+	log := logger.Get("main")
+	log.Info().Msgf("Starting Kredit Plus Service with config: %+v", config.Get())
 }
