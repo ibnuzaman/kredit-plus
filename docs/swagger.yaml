@@ -1,0 +1,79 @@
+basePath: /
+definitions:
+  model.BaseResponse:
+    properties:
+      data: {}
+      message:
+        example: Message!
+        type: string
+    type: object
+  model.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+info:
+  contact: {}
+  description: This is the API documentation for Kredit Plus backend services.
+  title: BE Kredit Plus
+  version: "1.0"
+paths:
+  /v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Handles user login by verifying credentials and returning authentication
+        data.
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful login response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "401":
+          description: Unauthorized error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+      summary: Authenticate user login
+      tags:
+      - auth
+  /v1/auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves information about the currently authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful user info response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "401":
+          description: Unauthorized error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+      security:
+      - AccessToken: []
+      summary: Get authenticated user info
+      tags:
+      - auth
+securityDefinitions:
+  AccessToken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

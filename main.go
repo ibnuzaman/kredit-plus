@@ -16,6 +16,13 @@ func init() {
 	database.Init(ctx, conf)
 }
 
+// @title						BE Kredit Plus
+// @version					1.0
+// @description				This is the API documentation for Kredit Plus backend services.
+// @BasePath					/
+// @securityDefinitions.apikey	AccessToken
+// @in							header
+// @name						Authorization
 func main() {
 	internal.Run()
 }

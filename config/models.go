@@ -3,12 +3,13 @@ package config
 import "time"
 
 type Config struct {
-	Env  Env
-	Port int    `env:"PORT" envDefault:"8080"`
-	Host string `env:"HOST" envDefault:""`
-	DB   DB     `envPrefix:"DB_"`
-	Cors Cors   `envPrefix:"CORS_"`
-	Auth Auth   `envPrefix:"AUTH_"`
+	Env     Env
+	Port    int     `env:"PORT" envDefault:"8080"`
+	Host    string  `env:"HOST" envDefault:""`
+	DB      DB      `envPrefix:"DB_"`
+	Cors    Cors    `envPrefix:"CORS_"`
+	Auth    Auth    `envPrefix:"AUTH_"`
+	Swagger Swagger `envPrefix:"SWAGGER_"`
 }
 
 type DB struct {
@@ -35,4 +36,9 @@ type Cors struct {
 type Auth struct {
 	SecretKey       string        `env:"SECRET,required"`
 	ExpiredDuration time.Duration `env:"EXPIRED_DURATION,required"`
+}
+
+type Swagger struct {
+	Username string `env:"USERNAME" envDefault:""`
+	Password string `env:"PASSWORD" envDefault:""`
 }

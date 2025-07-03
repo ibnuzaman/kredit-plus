@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"kredit-plus/config"
 	"kredit-plus/database"
+	_ "kredit-plus/docs"
 	"kredit-plus/internal/handler"
 	"kredit-plus/internal/middleware"
 	"kredit-plus/internal/repository"
@@ -19,11 +20,13 @@ import (
 
 	"github.com/gofiber/contrib/fiberzerolog"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/gofiber/swagger"
 	"github.com/rs/zerolog"
 )
 
@@ -53,6 +56,16 @@ func Run() {
 	app.Use(helmet.New())
 	app.Use(recover.New())
 
+	app.Get("/swagger/*", basicauth.New(basicauth.Config{
+		Users: map[string]string{
+			conf.Swagger.Username: conf.Swagger.Password,
+		},
+	}), swagger.New(swagger.Config{
+		URL:          "/swagger/doc.json",
+		DeepLinking:  true,
+		DocExpansion: "list",
+	}))
+
 	logs.Info().Msg("Server is running!")
 	baseUrl := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
 	server := &http.Server{
@@ -74,10 +87,12 @@ func Run() {
 
 	// Handler
 	authHandler := handler.NewAuthHandler(authService)
+	homeHandler := handler.NewHomeHandler()
 
 	// Router
 	mid := middleware.NewMiddleware(authRepo)
 	route := NewRouter(app, mid)
+	route.Home(homeHandler)
 	route.Auth(authHandler)
 
 	handleShutdown(server, logs)

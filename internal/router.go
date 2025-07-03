@@ -13,6 +13,7 @@ type router struct {
 }
 
 type Router interface {
+	Home(handler handler.HomeHandler)
 	Auth(handler handler.AuthHandler)
 }
 
@@ -23,10 +24,12 @@ func NewRouter(app *fiber.App, mid middleware.Middleware) Router {
 	}
 }
 
+func (r *router) Home(handler handler.HomeHandler) {
+	r.app.Get("", handler.Home)
+}
+
 func (r *router) Auth(handler handler.AuthHandler) {
 	auth := r.app.Group("v1/auth")
 	auth.Post("login", handler.Login)
-
-	// TODO: add middleware for authentication
 	auth.Get("me", r.mid.Auth(), handler.Me)
 }

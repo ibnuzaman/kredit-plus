@@ -33,6 +33,13 @@ dev:
 .PHONY: dev/run
 dev/run: docs lint build run
 
+## dev/install: install air for reloading on file changes and golangci-lint for linting
+.PHONY: dev/install
+dev/install:
+	go install github.com/air-verse/air@latest
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/swaggo/swag/cmd/swag@latest
+
 ## lint: run linters on the code
 .PHONY: lint
 lint:
@@ -46,3 +53,23 @@ lint:
 clean:
 	rm -f /tmp/${binary_name}
 	rm -f /tmp/coverage.out
+
+## docs: generate swagger documentation
+.PHONY: docs
+docs:
+	swag init .
+ifeq ($(shell uname), Darwin)
+	gsed -i "s/x-nullable/nullable/g" ./docs/docs.go
+	gsed -i "s/x-omitempty/omitempty/g" ./docs/docs.go
+	gsed -i "s/x-nullable/nullable/g" ./docs/swagger.json
+	gsed -i "s/x-omitempty/omitempty/g" ./docs/swagger.json
+	gsed -i "s/x-nullable/nullable/g" ./docs/swagger.yaml
+	gsed -i "s/x-omitempty/omitempty/g" ./docs/swagger.yaml
+else
+	sed -i "s/x-nullable/nullable/g" ./docs/docs.go
+	sed -i "s/x-omitempty/omitempty/g" ./docs/docs.go
+	sed -i "s/x-nullable/nullable/g" ./docs/swagger.json
+	sed -i "s/x-omitempty/omitempty/g" ./docs/swagger.json
+	sed -i "s/x-nullable/nullable/g" ./docs/swagger.yaml
+	sed -i "s/x-omitempty/omitempty/g" ./docs/swagger.yaml
+endif
