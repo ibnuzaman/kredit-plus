@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"kredit-plus/config"
 	"kredit-plus/database"
+	"kredit-plus/internal/handler"
+	"kredit-plus/internal/repository"
+	"kredit-plus/internal/service"
 	"kredit-plus/logger"
 	"net/http"
 	"os"
@@ -35,6 +38,7 @@ func Run() {
 		}
 	}(db)
 
+	dbGorm := database.GetGorm()
 	conf := config.Get()
 
 	logs.Info().Msg("Configuring server...")
@@ -62,15 +66,21 @@ func Run() {
 	}()
 
 	// Repository
+	authRepo := repository.NewAuthRepository(dbGorm)
 
 	// Service
+	authService := service.NewAuthService(authRepo)
 
 	// Handler
+	authHandler := handler.NewAuthHandler(authService)
 
 	// Router
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Welcome to Kredit Plus API")
 	})
+
+	route := NewRouter(app)
+	route.Auth(authHandler)
 
 	handleShutdown(server, logs)
 }

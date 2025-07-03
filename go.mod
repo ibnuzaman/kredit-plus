@@ -6,8 +6,10 @@ require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/gofiber/contrib/fiberzerolog v1.0.3
 	github.com/gofiber/fiber/v2 v2.52.8
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.34.0
+	golang.org/x/crypto v0.14.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.30.0
 )

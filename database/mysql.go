@@ -20,6 +20,7 @@ import (
 
 var onceMySql sync.Once
 var db *sql.DB
+var dbGorm *gorm.DB
 
 func Init(ctx context.Context, conf *config.Config) {
 	onceMySql.Do(func() {
@@ -33,8 +34,9 @@ func Init(ctx context.Context, conf *config.Config) {
 			conf.DB.Name,
 		)
 
-		config := &gorm.Config{
-			Logger: gormLogger.New(
+		var dbLogger gormLogger.Interface
+		if conf.Env.IsDevelopment() {
+			dbLogger = gormLogger.New(
 				log.New(os.Stdout, "\r\n", log.LstdFlags),
 				gormLogger.Config{
 					SlowThreshold:             time.Second,
@@ -42,7 +44,11 @@ func Init(ctx context.Context, conf *config.Config) {
 					IgnoreRecordNotFoundError: true,
 					Colorful:                  false,
 				},
-			),
+			)
+		}
+
+		config := &gorm.Config{
+			Logger: dbLogger,
 		}
 
 		var err error
@@ -56,10 +62,6 @@ func Init(ctx context.Context, conf *config.Config) {
 			logs.Fatal().Err(err).Msg("Failed to get sql.DB object from GORM")
 		}
 
-		if conf.DB.AutoMigrate {
-			autoMigrate(dbMySql, logs)
-		}
-
 		sqlDB.SetMaxIdleConns(conf.DB.MaxIdle)
 		sqlDB.SetMaxOpenConns(conf.DB.MaxOpen)
 		sqlDB.SetConnMaxLifetime(conf.DB.ConnectionLifetime)
@@ -69,12 +71,21 @@ func Init(ctx context.Context, conf *config.Config) {
 
 		db = new(sql.DB)
 		db = sqlDB
+
+		dbGorm = new(gorm.DB)
+		dbGorm = dbMySql
+
+		if conf.DB.AutoMigrate {
+			logs.Info().Msg("Auto migrating database schemas")
+			autoMigrate(logs)
+			logs.Info().Msg("MySQL database initialized successfully")
+		}
 	})
 }
 
-func autoMigrate(db *gorm.DB, log *zerolog.Logger) {
+func autoMigrate(log *zerolog.Logger) {
 	log.Info().Msg("Auto migrating database schemas")
-	err := db.AutoMigrate(model.Customer{})
+	err := dbGorm.AutoMigrate(model.Customer{})
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to auto migrate database schemas")
 		return
@@ -84,4 +95,8 @@ func autoMigrate(db *gorm.DB, log *zerolog.Logger) {
 
 func Get() *sql.DB {
 	return db
+}
+
+func GetGorm() *gorm.DB {
+	return dbGorm
 }

@@ -8,6 +8,7 @@ type Config struct {
 	Host string `env:"HOST" envDefault:""`
 	DB   DB     `envPrefix:"DB_"`
 	Cors Cors   `envPrefix:"CORS_"`
+	Auth Auth   `envPrefix:"AUTH_"`
 }
 
 type DB struct {
@@ -29,4 +30,9 @@ type Cors struct {
 	AllowHeaders     string `env:"ALLOW_HEADERS" envDefault:"Origin,Content-Type,Accept,Authorization"`
 	AllowCredentials bool   `env:"ALLOW_CREDENTIALS" envDefault:"false"`
 	ExposeHeaders    string `env:"EXPOSE_HEADERS" envDefault:"Content-Length,Content-Type,Authorization"`
+}
+
+type Auth struct {
+	SecretKey       string        `env:"SECRET,required"`
+	ExpiredDuration time.Duration `env:"EXPIRED_DURATION,required"`
 }
