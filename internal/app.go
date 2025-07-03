@@ -82,10 +82,11 @@ func Run() {
 	// Repository
 	authRepo := repository.NewAuthRepository(dbGorm)
 	customerRepo := repository.NewCustomerRepository(dbGorm)
+	tenorRepo := repository.NewTenorRepository(dbGorm)
 
 	// Service
 	authService := service.NewAuthService(authRepo)
-	customerService := service.NewCustomerService(customerRepo)
+	customerService := service.NewCustomerService(customerRepo, tenorRepo)
 
 	// Handler
 	homeHandler := handler.NewHomeHandler()

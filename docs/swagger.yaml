@@ -4,17 +4,9 @@ definitions:
     properties:
       email:
         type: string
-      full_name:
-        type: string
       id:
         type: integer
-      legal_name:
-        type: string
-      nik:
-        type: string
-      salary:
-        type: number
-      selfie_file:
+      name:
         type: string
     type: object
   model.BaseResponse:
@@ -22,6 +14,29 @@ definitions:
       data: {}
       message:
         example: Message!
+        type: string
+    type: object
+  model.CustomerResponse:
+    properties:
+      date_birth:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      identity_file:
+        type: string
+      legal_name:
+        type: string
+      nik:
+        type: string
+      place_birth:
+        type: string
+      salary:
+        type: number
+      selfie_file:
         type: string
     type: object
   model.LoginRequest:
@@ -33,6 +48,15 @@ definitions:
     required:
     - email
     - password
+    type: object
+  model.TenorResponse:
+    properties:
+      amount:
+        type: number
+      id:
+        type: integer
+      month:
+        type: integer
     type: object
 info:
   contact: {}
@@ -104,7 +128,12 @@ paths:
         "200":
           description: Successful customer information response
           schema:
-            $ref: '#/definitions/model.BaseResponse'
+            allOf:
+            - $ref: '#/definitions/model.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CustomerResponse'
+              type: object
         "401":
           description: Unauthorized error response
           schema:
@@ -112,6 +141,34 @@ paths:
       security:
       - AccessToken: []
       summary: Get customer information
+      tags:
+      - customer
+  /v1/customer/tenor:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves available tenor for the customer.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful customer tenor response
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.TenorResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+      security:
+      - AccessToken: []
+      summary: Get customer tenor
       tags:
       - customer
 securityDefinitions:

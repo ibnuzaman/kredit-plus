@@ -16,3 +16,17 @@ type Tenor struct {
 func (Tenor) TableName() string {
 	return "tenors"
 }
+
+type TenorResponse struct {
+	ID     uint    `json:"id"`
+	Month  uint8   `json:"month"`
+	Amount float64 `json:"amount"`
+}
+
+func (t Tenor) ToResponse() TenorResponse {
+	return TenorResponse{
+		ID:     t.ID,
+		Month:  t.Month,
+		Amount: t.Amount,
+	}
+}

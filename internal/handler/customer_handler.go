@@ -33,8 +33,8 @@ func NewCustomerHandler(service service.CustomerService) CustomerHandler {
 //	@Accept			json
 //	@Produce		json
 //	@Security		AccessToken
-//	@Success		200	{object}	model.BaseResponse	"Successful customer information response"
-//	@Failure		401	{object}	model.BaseResponse	"Unauthorized error response"
+//	@Success		200	{object}	model.BaseResponse{data=model.CustomerResponse}	"Successful customer information response"
+//	@Failure		401	{object}	model.BaseResponse								"Unauthorized error response"
 //	@Router			/v1/customer/information [get]
 func (h *customerHandler) Information(ctx *fiber.Ctx) error {
 	user := new(model.AuthMe)
@@ -49,6 +49,26 @@ func (h *customerHandler) Information(ctx *fiber.Ctx) error {
 	})
 }
 
+// Tenor godoc
+//
+//	@Summary		Get customer tenor
+//	@Description	Retrieves available tenor for the customer.
+//	@Tags			customer
+//	@Accept			json
+//	@Produce		json
+//	@Security		AccessToken
+//	@Success		200	{object}	model.BaseResponse{data=[]model.TenorResponse}	"Successful customer tenor response"
+//	@Failure		401	{object}	model.BaseResponse								"Unauthorized error response"
+//	@Router			/v1/customer/tenor [get]
 func (h *customerHandler) Tenor(ctx *fiber.Ctx) error {
-	return nil
+	user := new(model.AuthMe)
+	isFound := user.FromReq(ctx)
+	h.exception.UnauthorizedBool(!isFound)
+
+	data := h.service.Tenor(ctx.UserContext(), user.ID)
+	return ctx.JSON(model.BaseResponse{
+		Code:    fiber.StatusOK,
+		Message: "Successfully retrieved customer tenor",
+		Data:    data,
+	})
 }

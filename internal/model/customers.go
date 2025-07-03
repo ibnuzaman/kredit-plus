@@ -34,3 +34,31 @@ func (c Customer) ToAuthMe() AuthMe {
 		Email: c.Email,
 	}
 }
+
+type CustomerResponse struct {
+	ID           uint      `json:"id"`
+	NIK          string    `json:"nik"`
+	FullName     string    `json:"full_name"`
+	Email        string    `json:"email"`
+	LegalName    string    `json:"legal_name"`
+	PlaceBirth   string    `json:"place_birth"`
+	DateBirth    time.Time `json:"date_birth"`
+	Salary       float64   `json:"salary"`
+	IdentityFile string    `json:"identity_file"`
+	SelfieFile   string    `json:"selfie_file"`
+}
+
+func (c Customer) ToResponse() CustomerResponse {
+	return CustomerResponse{
+		ID:           c.ID,
+		NIK:          c.NIK,
+		FullName:     c.FullName,
+		Email:        c.Email,
+		LegalName:    c.LegalName,
+		PlaceBirth:   c.PlaceBirth,
+		DateBirth:    c.DateBirth,
+		Salary:       c.Salary,
+		IdentityFile: c.IdentityFile,
+		SelfieFile:   c.SelfieFile,
+	}
+}

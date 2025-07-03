@@ -123,7 +123,68 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful customer information response",
                         "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.CustomerResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error response",
+                        "schema": {
                             "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/customer/tenor": {
+            "get": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    }
+                ],
+                "description": "Retrieves available tenor for the customer.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customer"
+                ],
+                "summary": "Get customer tenor",
+                "responses": {
+                    "200": {
+                        "description": "Successful customer tenor response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.TenorResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
@@ -143,22 +204,10 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "full_name": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
-                "legal_name": {
-                    "type": "string"
-                },
-                "nik": {
-                    "type": "string"
-                },
-                "salary": {
-                    "type": "number"
-                },
-                "selfie_file": {
+                "name": {
                     "type": "string"
                 }
             }
@@ -170,6 +219,41 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Message!"
+                }
+            }
+        },
+        "model.CustomerResponse": {
+            "type": "object",
+            "properties": {
+                "date_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "identity_file": {
+                    "type": "string"
+                },
+                "legal_name": {
+                    "type": "string"
+                },
+                "nik": {
+                    "type": "string"
+                },
+                "place_birth": {
+                    "type": "string"
+                },
+                "salary": {
+                    "type": "number"
+                },
+                "selfie_file": {
+                    "type": "string"
                 }
             }
         },
@@ -185,6 +269,20 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "model.TenorResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "month": {
+                    "type": "integer"
                 }
             }
         }
