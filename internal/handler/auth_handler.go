@@ -38,5 +38,13 @@ func (h *authHandler) Login(ctx *fiber.Ctx) error {
 }
 
 func (h *authHandler) Me(ctx *fiber.Ctx) error {
-	return ctx.SendString("User information retrieved successfully")
+	user := new(model.AuthMe)
+	isFound := user.FromReq(ctx)
+	h.exception.UnauthorizedBool(!isFound)
+
+	return ctx.JSON(model.BaseResponse{
+		Code:    fiber.StatusOK,
+		Message: "Success get user info",
+		Data:    user,
+	})
 }

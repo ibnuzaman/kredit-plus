@@ -7,6 +7,7 @@ import (
 	"kredit-plus/config"
 	"kredit-plus/database"
 	"kredit-plus/internal/handler"
+	"kredit-plus/internal/middleware"
 	"kredit-plus/internal/repository"
 	"kredit-plus/internal/service"
 	"kredit-plus/logger"
@@ -75,11 +76,8 @@ func Run() {
 	authHandler := handler.NewAuthHandler(authService)
 
 	// Router
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Welcome to Kredit Plus API")
-	})
-
-	route := NewRouter(app)
+	mid := middleware.NewMiddleware(authRepo)
+	route := NewRouter(app, mid)
 	route.Auth(authHandler)
 
 	handleShutdown(server, logs)

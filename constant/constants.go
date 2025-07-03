@@ -5,3 +5,7 @@ const (
 	MsgBadRequest          = "Bad Request"
 	MsgUnauthorized        = "Unauthorized"
 )
+
+const (
+	KeyLocalsAuthUser = "auth_user"
+)

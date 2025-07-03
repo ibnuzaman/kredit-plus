@@ -13,7 +13,7 @@ type Customer struct {
 	LegalName    string    `gorm:"type:varchar(100);not null"`
 	PlaceBirth   string    `gorm:"type:varchar(32);not null"`
 	DateBirth    time.Time `gorm:"type:date;not null"`
-	Sallary      float64   `gorm:"type:decimal(12,2);not null"`
+	Salary       float64   `gorm:"type:decimal(12,2);not null"`
 	IdentityFile string    `gorm:"type:varchar(64);not null"`
 	SelfieFile   string    `gorm:"type:varchar(64);not null"`
 	CreatedAt    time.Time `gorm:"type:date;not null"`
@@ -22,4 +22,16 @@ type Customer struct {
 
 func (Customer) TableName() string {
 	return "customers"
+}
+
+func (c Customer) ToAuthMe() AuthMe {
+	return AuthMe{
+		ID:         c.ID,
+		NIK:        c.NIK,
+		FullName:   c.FullName,
+		LegalName:  c.LegalName,
+		Email:      c.Email,
+		Salary:     c.Salary,
+		SelfieFile: c.SelfieFile,
+	}
 }
