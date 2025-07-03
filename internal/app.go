@@ -81,19 +81,23 @@ func Run() {
 
 	// Repository
 	authRepo := repository.NewAuthRepository(dbGorm)
+	customerRepo := repository.NewCustomerRepository(dbGorm)
 
 	// Service
 	authService := service.NewAuthService(authRepo)
+	customerService := service.NewCustomerService(customerRepo)
 
 	// Handler
-	authHandler := handler.NewAuthHandler(authService)
 	homeHandler := handler.NewHomeHandler()
+	authHandler := handler.NewAuthHandler(authService)
+	customerHandler := handler.NewCustomerHandler(customerService)
 
 	// Router
 	mid := middleware.NewMiddleware(authRepo)
 	route := NewRouter(app, mid)
 	route.Home(homeHandler)
 	route.Auth(authHandler)
+	route.Customer(customerHandler)
 
 	handleShutdown(server, logs)
 }

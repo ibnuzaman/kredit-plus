@@ -1,5 +1,22 @@
 basePath: /
 definitions:
+  model.AuthMe:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      legal_name:
+        type: string
+      nik:
+        type: string
+      salary:
+        type: number
+      selfie_file:
+        type: string
+    type: object
   model.BaseResponse:
     properties:
       data: {}
@@ -61,7 +78,12 @@ paths:
         "200":
           description: Successful user info response
           schema:
-            $ref: '#/definitions/model.BaseResponse'
+            allOf:
+            - $ref: '#/definitions/model.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AuthMe'
+              type: object
         "401":
           description: Unauthorized error response
           schema:
@@ -71,6 +93,27 @@ paths:
       summary: Get authenticated user info
       tags:
       - auth
+  /v1/customer/information:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves information about the customer.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful customer information response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "401":
+          description: Unauthorized error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+      security:
+      - AccessToken: []
+      summary: Get customer information
+      tags:
+      - customer
 securityDefinitions:
   AccessToken:
     in: header

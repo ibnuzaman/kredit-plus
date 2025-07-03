@@ -70,6 +70,52 @@
                     "200": {
                         "description": "Successful user info response",
                         "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.AuthMe"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/customer/information": {
+            "get": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    }
+                ],
+                "description": "Retrieves information about the customer.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customer"
+                ],
+                "summary": "Get customer information",
+                "responses": {
+                    "200": {
+                        "description": "Successful customer information response",
+                        "schema": {
                             "$ref": "#/definitions/model.BaseResponse"
                         }
                     },
@@ -84,6 +130,32 @@
         }
     },
     "definitions": {
+        "model.AuthMe": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "legal_name": {
+                    "type": "string"
+                },
+                "nik": {
+                    "type": "string"
+                },
+                "salary": {
+                    "type": "number"
+                },
+                "selfie_file": {
+                    "type": "string"
+                }
+            }
+        },
         "model.BaseResponse": {
             "type": "object",
             "properties": {

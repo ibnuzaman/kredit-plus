@@ -29,12 +29,8 @@ func (Customer) TableName() string {
 
 func (c Customer) ToAuthMe() AuthMe {
 	return AuthMe{
-		ID:         c.ID,
-		NIK:        c.NIK,
-		FullName:   c.FullName,
-		LegalName:  c.LegalName,
-		Email:      c.Email,
-		Salary:     c.Salary,
-		SelfieFile: c.SelfieFile,
+		ID:    c.ID,
+		Name:  c.FullName,
+		Email: c.Email,
 	}
 }

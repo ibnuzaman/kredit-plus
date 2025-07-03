@@ -16,13 +16,9 @@ type LoginResponse struct {
 }
 
 type AuthMe struct {
-	ID         uint    `json:"id"`
-	NIK        string  `json:"nik"`
-	FullName   string  `json:"full_name"`
-	LegalName  string  `json:"legal_name"`
-	Email      string  `json:"email"`
-	Salary     float64 `json:"salary"`
-	SelfieFile string  `json:"selfie_file"`
+	ID    uint   `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 func (a *AuthMe) FromReq(ctx *fiber.Ctx) bool {
