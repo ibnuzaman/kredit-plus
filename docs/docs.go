@@ -316,6 +316,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/loan/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    }
+                ],
+                "description": "Retrieves detailed information about a specific loan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Get loan detail",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Loan ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful loan detail response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.LoanDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/transaction": {
             "get": {
                 "security": [
@@ -540,6 +607,53 @@ const docTemplate = `{
                 }
             }
         },
+        "model.LoanDetailResponse": {
+            "type": "object",
+            "properties": {
+                "admin_fee": {
+                    "type": "number"
+                },
+                "assets_name": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "has_full_paid": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "installment_amount": {
+                    "type": "number"
+                },
+                "otr": {
+                    "type": "number"
+                },
+                "pay_per_month": {
+                    "type": "number"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenor_months": {
+                    "type": "integer"
+                },
+                "total_amount": {
+                    "type": "number"
+                },
+                "total_paid": {
+                    "type": "integer"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TransactionResponse"
+                    }
+                }
+            }
+        },
         "model.LoanResponse": {
             "type": "object",
             "properties": {
@@ -552,6 +666,9 @@ const docTemplate = `{
                 "end_date": {
                     "type": "string"
                 },
+                "has_full_paid": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -559,6 +676,9 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "otr": {
+                    "type": "number"
+                },
+                "pay_per_month": {
                     "type": "number"
                 },
                 "start_date": {
@@ -609,6 +729,9 @@ const docTemplate = `{
             "properties": {
                 "amount": {
                     "type": "number"
+                },
+                "date": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

@@ -46,6 +46,10 @@ func (s *transactionService) Create(ctx context.Context, customerId uint, req mo
 	s.exception.ErrorSkipNotFound(err)
 	s.exception.UnprocessableEntityBool(loan == nil, "Loan not found")
 
+	if loan.TenorMonths == uint8(loan.TotalPaid) {
+		s.exception.UnprocessableEntity("You have fully paid this loan")
+	}
+
 	totalAmount := loan.OTR + loan.InstallmentAmount + loan.AdminFee
 	interestAmount := totalAmount * float64(constant.InterestPercentage)
 	totalAmountPerMonth := totalAmount / float64(loan.TenorMonths)

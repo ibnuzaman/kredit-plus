@@ -25,6 +25,7 @@ type Exception interface {
 	ErrorSkipNotFound(err error)
 	BadRequest(messages ...string)
 	BadRequestErr(err error, messages ...string)
+	BadRequestBool(isError bool, messages ...string)
 	ValidateStruct(dataSet interface{}, fullPathPrefix ...bool)
 	Unauthorized(messages ...string)
 	UnauthorizedErr(err error, messages ...string)
@@ -32,6 +33,12 @@ type Exception interface {
 	UnprocessableEntity(messages ...string)
 	UnprocessableEntityErr(err error, messages ...string)
 	UnprocessableEntityBool(isError bool, messages ...string)
+	Forbidden(messages ...string)
+	ForbiddenErr(err error, messages ...string)
+	ForbiddenBool(isError bool, messages ...string)
+	NotFound(messages ...string)
+	NotFoundErr(err error, messages ...string)
+	NotFoundBool(isError bool, messages ...string)
 }
 
 func NewException() Exception {
@@ -90,6 +97,12 @@ func (e *exception) BadRequest(messages ...string) {
 
 func (e *exception) BadRequestErr(err error, messages ...string) {
 	if err != nil {
+		e.baseBadRequest(messages...)
+	}
+}
+
+func (e *exception) BadRequestBool(isError bool, messages ...string) {
+	if isError {
 		e.baseBadRequest(messages...)
 	}
 }
@@ -175,5 +188,47 @@ func (e *exception) UnprocessableEntityErr(err error, messages ...string) {
 func (e *exception) UnprocessableEntityBool(isError bool, messages ...string) {
 	if isError {
 		e.baseUnprocessableEntity(messages...)
+	}
+}
+
+func (e *exception) baseForbidden(messages ...string) {
+	e.log.Warn().Str("caller", e.getCaller(3)).Msg("FORBIDDEN")
+	panic(model.NewErrorMessage(fiber.StatusForbidden, e.getMessage(constant.MsgForbidden, messages...), nil))
+}
+
+func (e *exception) Forbidden(messages ...string) {
+	e.baseForbidden(messages...)
+}
+
+func (e *exception) ForbiddenErr(err error, messages ...string) {
+	if err != nil {
+		e.baseForbidden(messages...)
+	}
+}
+
+func (e *exception) ForbiddenBool(isError bool, messages ...string) {
+	if isError {
+		e.baseForbidden(messages...)
+	}
+}
+
+func (e *exception) baseNotFound(messages ...string) {
+	e.log.Warn().Str("caller", e.getCaller(3)).Msg("NOT_FOUND")
+	panic(model.NewErrorMessage(fiber.StatusNotFound, e.getMessage(constant.MsgNotFound, messages...), nil))
+}
+
+func (e *exception) NotFound(messages ...string) {
+	e.baseNotFound(messages...)
+}
+
+func (e *exception) NotFoundErr(err error, messages ...string) {
+	if err != nil {
+		e.baseNotFound(messages...)
+	}
+}
+
+func (e *exception) NotFoundBool(isError bool, messages ...string) {
+	if isError {
+		e.baseNotFound(messages...)
 	}
 }

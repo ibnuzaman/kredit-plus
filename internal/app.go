@@ -89,7 +89,7 @@ func Run() {
 	// Service
 	authService := service.NewAuthService(authRepo)
 	customerService := service.NewCustomerService(customerRepo, tenorRepo)
-	loadService := service.NewLoanService(loanRepo, tenorRepo)
+	loadService := service.NewLoanService(loanRepo, tenorRepo, transactionRepo)
 	transactionService := service.NewTransactionService(transactionRepo, loanRepo)
 
 	// Handler

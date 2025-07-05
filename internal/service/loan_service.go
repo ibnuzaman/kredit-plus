@@ -11,21 +11,24 @@ import (
 )
 
 type loanService struct {
-	repo      repository.LoanRepository
-	tenorRepo repository.TenorRepository
-	exception exception.Exception
+	repo            repository.LoanRepository
+	tenorRepo       repository.TenorRepository
+	transactionRepo repository.TransactionRepository
+	exception       exception.Exception
 }
 
 type LoanService interface {
 	List(ctx context.Context, customerId, page, perPage uint) []model.LoanResponse
+	Detail(ctx context.Context, customerId, loanId uint) model.LoanDetailResponse
 	Create(ctx context.Context, customerId uint, req model.CreateLoanRequest)
 }
 
-func NewLoanService(repo repository.LoanRepository, tenorRepo repository.TenorRepository) LoanService {
+func NewLoanService(repo repository.LoanRepository, tenorRepo repository.TenorRepository, transactionRepo repository.TransactionRepository) LoanService {
 	return &loanService{
-		repo:      repo,
-		tenorRepo: tenorRepo,
-		exception: exception.NewException(),
+		repo:            repo,
+		tenorRepo:       tenorRepo,
+		transactionRepo: transactionRepo,
+		exception:       exception.NewException(),
 	}
 }
 
@@ -37,6 +40,30 @@ func (s *loanService) List(ctx context.Context, customerId, page, perPage uint) 
 	for _, loan := range loans {
 		res = append(res, loan.ToResponse())
 	}
+	return res
+}
+
+func (s *loanService) Detail(ctx context.Context, customerId, loanId uint) model.LoanDetailResponse {
+	loan, err := s.repo.GetById(ctx, loanId)
+	s.exception.ErrorSkipNotFound(err)
+	s.exception.ForbiddenBool(loan == nil, "Loan not found")
+	s.exception.ForbiddenBool(loan.CustomerID != customerId, "You are not allowed to access this loan")
+
+	res := model.LoanDetailResponse{
+		LoanResponse: loan.ToResponse(),
+		Transactions: []model.TransactionResponse{},
+	}
+
+	if loan.TotalPaid == 0 {
+		return res
+	}
+
+	transactions, err := s.transactionRepo.FindByLoanId(ctx, loanId)
+	s.exception.ErrorSkipNotFound(err)
+	for _, transaction := range transactions {
+		res.Transactions = append(res.Transactions, transaction.ToResponse())
+	}
+
 	return res
 }
 

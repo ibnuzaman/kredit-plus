@@ -47,6 +47,7 @@ func (r *router) Loan(handler handler.LoanHandler) {
 	loan := r.app.Group("v1/loan")
 	loan.Get("", r.mid.Auth(), handler.List)
 	loan.Post("", r.mid.Auth(), handler.Create)
+	loan.Get(":id", r.mid.Auth(), handler.Detail)
 }
 
 func (r *router) Transaction(handler handler.TransactionHandler) {

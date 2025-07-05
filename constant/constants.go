@@ -6,6 +6,8 @@ const (
 	MsgUnauthorized        = "Unauthorized"
 	MsgUnprocessableEntity = "Unprocessable Entity"
 	MsgErrorValidation     = "Validation Error"
+	MsgForbidden           = "Forbidden"
+	MsgNotFound            = "Not Found"
 )
 
 const (

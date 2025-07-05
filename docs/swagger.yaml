@@ -71,6 +71,37 @@ definitions:
       selfie_file:
         type: string
     type: object
+  model.LoanDetailResponse:
+    properties:
+      admin_fee:
+        type: number
+      assets_name:
+        type: string
+      end_date:
+        type: string
+      has_full_paid:
+        type: boolean
+      id:
+        type: integer
+      installment_amount:
+        type: number
+      otr:
+        type: number
+      pay_per_month:
+        type: number
+      start_date:
+        type: string
+      tenor_months:
+        type: integer
+      total_amount:
+        type: number
+      total_paid:
+        type: integer
+      transactions:
+        items:
+          $ref: '#/definitions/model.TransactionResponse'
+        type: array
+    type: object
   model.LoanResponse:
     properties:
       admin_fee:
@@ -79,11 +110,15 @@ definitions:
         type: string
       end_date:
         type: string
+      has_full_paid:
+        type: boolean
       id:
         type: integer
       installment_amount:
         type: number
       otr:
+        type: number
+      pay_per_month:
         type: number
       start_date:
         type: string
@@ -117,6 +152,8 @@ definitions:
     properties:
       amount:
         type: number
+      date:
+        type: string
       id:
         type: integer
       interest_amount:
@@ -309,6 +346,46 @@ paths:
       security:
       - AccessToken: []
       summary: Create loan
+      tags:
+      - loan
+  /v1/loan/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves detailed information about a specific loan.
+      parameters:
+      - description: Loan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful loan detail response
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.BaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.LoanDetailResponse'
+              type: object
+        "400":
+          description: Bad request error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "401":
+          description: Unauthorized error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "403":
+          description: Forbidden error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+      security:
+      - AccessToken: []
+      summary: Get loan detail
       tags:
       - loan
   /v1/transaction:

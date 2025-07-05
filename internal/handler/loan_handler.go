@@ -16,6 +16,7 @@ type loanHandler struct {
 type LoanHandler interface {
 	List(ctx *fiber.Ctx) error
 	Create(ctx *fiber.Ctx) error
+	Detail(ctx *fiber.Ctx) error
 }
 
 func NewLoanHandler(service service.LoanService) LoanHandler {
@@ -48,6 +49,37 @@ func (h *loanHandler) List(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.BaseResponse{
 		Code:    fiber.StatusOK,
 		Message: "Successfully retrieved loan customer",
+		Data:    data,
+	})
+}
+
+// Detail godoc
+//
+//	@Summary		Get loan detail
+//	@Description	Retrieves detailed information about a specific loan.
+//	@Tags			loan
+//	@Accept			json
+//	@Produce		json
+//	@Security		AccessToken
+//	@Param			id		path		int												true	"Loan ID"
+//	@Success		200	{object}	model.BaseResponse{data=model.LoanDetailResponse}	"Successful loan detail response"
+//	@Failure		400	{object}	model.BaseResponse									"Bad request error response"
+//	@Failure		401	{object}	model.BaseResponse									"Unauthorized error response"
+//	@Failure		403	{object}	model.BaseResponse									"Forbidden error response"
+//	@Router			/v1/loan/{id} [get]
+func (h *loanHandler) Detail(ctx *fiber.Ctx) error {
+	user := new(model.AuthMe)
+	isFound := user.FromReq(ctx)
+	h.exception.UnauthorizedBool(!isFound)
+
+	loanId, err := ctx.ParamsInt("id", 0)
+	h.exception.BadRequestErr(err)
+	h.exception.BadRequestBool(loanId <= 0, "Invalid loan ID")
+
+	data := h.service.Detail(ctx.UserContext(), user.ID, uint(loanId))
+	return ctx.JSON(model.BaseResponse{
+		Code:    fiber.StatusOK,
+		Message: "Successfully retrieved loan detail",
 		Data:    data,
 	})
 }

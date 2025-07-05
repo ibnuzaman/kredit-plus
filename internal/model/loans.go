@@ -2,6 +2,7 @@ package model
 
 import (
 	"kredit-plus/constant"
+	"math"
 	"time"
 )
 
@@ -34,24 +35,34 @@ type LoanResponse struct {
 	AssetsName        string    `json:"assets_name"`
 	TenorMonths       uint8     `json:"tenor_months"`
 	TotalPaid         int       `json:"total_paid"`
+	HasFullPaid       bool      `json:"has_full_paid"`
+	PayPerMonth       float64   `json:"pay_per_month"`
 	StartDate         time.Time `json:"start_date"`
 	EndDate           time.Time `json:"end_date"`
 }
 
 func (l Loan) ToResponse() LoanResponse {
 	total := l.OTR + l.AdminFee + l.InstallmentAmount
+	totalAmount := total + (total * constant.InterestPercentage * float64(l.TenorMonths))
 	return LoanResponse{
 		ID:                l.ID,
 		OTR:               l.OTR,
 		AdminFee:          l.AdminFee,
 		InstallmentAmount: l.InstallmentAmount,
-		TotalAmount:       total + (total * constant.InterestPercentage * float64(l.TenorMonths)),
+		TotalAmount:       totalAmount,
 		AssetsName:        l.AssetsName,
 		TenorMonths:       l.TenorMonths,
 		TotalPaid:         l.TotalPaid,
+		HasFullPaid:       l.TotalPaid == int(l.TenorMonths),
+		PayPerMonth:       math.Round(totalAmount / float64(l.TenorMonths)),
 		StartDate:         l.CreatedAt,
 		EndDate:           l.CreatedAt.AddDate(0, int(l.TenorMonths), 0),
 	}
+}
+
+type LoanDetailResponse struct {
+	LoanResponse
+	Transactions []TransactionResponse `json:"transactions"`
 }
 
 type CreateLoanRequest struct {
