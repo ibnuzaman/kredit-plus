@@ -90,7 +90,7 @@ func Run() {
 	authService := service.NewAuthService(authRepo)
 	customerService := service.NewCustomerService(customerRepo, tenorRepo)
 	loadService := service.NewLoanService(loanRepo, tenorRepo)
-	transactionService := service.NewTransactionService(transactionRepo)
+	transactionService := service.NewTransactionService(transactionRepo, loanRepo)
 
 	// Handler
 	homeHandler := handler.NewHomeHandler()

@@ -364,7 +364,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Transaction"
+                                                "$ref": "#/definitions/model.TransactionResponse"
                                             }
                                         }
                                     }
@@ -374,6 +374,61 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    }
+                ],
+                "description": "Creates a new transaction.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction"
+                ],
+                "summary": "Create transaction",
+                "parameters": [
+                    {
+                        "description": "Create Transaction Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateTransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful transaction creation response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error response",
                         "schema": {
                             "$ref": "#/definitions/model.BaseResponse"
                         }
@@ -432,56 +487,21 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Customer": {
+        "model.CreateTransactionRequest": {
             "type": "object",
+            "required": [
+                "amount",
+                "loan_id"
+            ],
             "properties": {
-                "created_at": {
-                    "type": "string"
+                "amount": {
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000
                 },
-                "date_birth": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "identity_file": {
-                    "type": "string"
-                },
-                "legal_name": {
-                    "type": "string"
-                },
-                "loans": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Loan"
-                    }
-                },
-                "nik": {
-                    "type": "string"
-                },
-                "place_birth": {
-                    "type": "string"
-                },
-                "salary": {
-                    "type": "number"
-                },
-                "selfie_file": {
-                    "type": "string"
-                },
-                "tenors": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Tenor"
-                    }
-                },
-                "updated_at": {
-                    "type": "string"
+                "loan_id": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -516,50 +536,6 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "selfie_file": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Loan": {
-            "type": "object",
-            "properties": {
-                "admin_fee": {
-                    "type": "number"
-                },
-                "assets_name": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "customer": {
-                    "$ref": "#/definitions/model.Customer"
-                },
-                "customer_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "installment_amount": {
-                    "type": "number"
-                },
-                "otr": {
-                    "type": "number"
-                },
-                "tenor_months": {
-                    "type": "integer"
-                },
-                "total_paid": {
-                    "type": "integer"
-                },
-                "transactions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Transaction"
-                    }
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -614,32 +590,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Tenor": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "customer": {
-                    "$ref": "#/definitions/model.Customer"
-                },
-                "customer_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "month": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.TenorResponse": {
             "type": "object",
             "properties": {
@@ -654,14 +604,11 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Transaction": {
+        "model.TransactionResponse": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -669,14 +616,8 @@ const docTemplate = `{
                 "interest_amount": {
                     "type": "number"
                 },
-                "loan": {
-                    "$ref": "#/definitions/model.Loan"
-                },
                 "loan_id": {
                     "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         }

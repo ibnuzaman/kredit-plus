@@ -52,4 +52,5 @@ func (r *router) Loan(handler handler.LoanHandler) {
 func (r *router) Transaction(handler handler.TransactionHandler) {
 	transaction := r.app.Group("v1/transaction")
 	transaction.Get("", r.mid.Auth(), handler.List)
+	transaction.Post("", r.mid.Auth(), handler.Create)
 }

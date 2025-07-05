@@ -13,6 +13,7 @@ type transactionRepository struct {
 
 type TransactionRepository interface {
 	FindByCustomerId(ctx context.Context, customerId, page, perPage uint) ([]model.Transaction, error)
+	Create(ctx context.Context, transaction *model.Transaction) error
 }
 
 func NewTransactionRepository(db *gorm.DB) TransactionRepository {
@@ -31,4 +32,18 @@ func (r *transactionRepository) FindByCustomerId(ctx context.Context, customerId
 	}
 
 	return transactions, nil
+}
+
+func (r *transactionRepository) Create(ctx context.Context, transaction *model.Transaction) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(transaction).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&model.Loan{}).Where("id = ?", transaction.LoanID).Update("total_paid", gorm.Expr("total_paid + ?", 1)).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
