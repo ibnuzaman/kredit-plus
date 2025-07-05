@@ -19,8 +19,9 @@ type Customer struct {
 	CreatedAt    time.Time `gorm:"not null" json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 
-	Tenors []Tenor `gorm:"foreignKey:CustomerID" json:"tenors,omitempty"`
-	Loans  []Loan  `gorm:"foreignKey:CustomerID" json:"loans,omitempty"`
+	Tenors       []Tenor       `gorm:"foreignKey:CustomerID" json:"tenors,omitempty"`
+	Loans        []Loan        `gorm:"foreignKey:CustomerID" json:"loans,omitempty"`
+	Transactions []Transaction `gorm:"foreignKey:CustomerID" json:"transactions,omitempty"`
 }
 
 func (Customer) TableName() string {
