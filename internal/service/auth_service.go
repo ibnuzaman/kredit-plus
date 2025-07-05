@@ -48,6 +48,7 @@ func (s *authService) Login(ctx context.Context, req model.LoginRequest) model.L
 }
 
 func (s *authService) compareHash(hash, password string) bool {
+	//? implement A02: Cryptographic Failures
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) != nil
 }
 
@@ -63,6 +64,7 @@ func (s *authService) generateToken(customerId uint) (string, error) {
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := jwtToken.SignedString([]byte(s.conf.Auth.SecretKey))
 	if err != nil {
+		//? implement A02: Cryptographic Failures
 		return "", err
 	}
 

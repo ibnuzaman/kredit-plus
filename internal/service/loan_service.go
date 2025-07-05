@@ -46,6 +46,8 @@ func (s *loanService) List(ctx context.Context, customerId, page, perPage uint) 
 func (s *loanService) Detail(ctx context.Context, customerId, loanId uint) model.LoanDetailResponse {
 	loan, err := s.repo.GetById(ctx, loanId)
 	s.exception.ErrorSkipNotFound(err)
+
+	//? implement A01: Broken Access Control
 	s.exception.ForbiddenBool(loan == nil, "Loan not found")
 	s.exception.ForbiddenBool(loan.CustomerID != customerId, "You are not allowed to access this loan")
 
@@ -97,8 +99,8 @@ func (s *loanService) Create(ctx context.Context, customerId uint, req model.Cre
 		CustomerID:        customerId,
 		OTR:               req.OTR,
 		TenorMonths:       req.TenorMonths,
-		InstallmentAmount: req.OTR * float64(constant.InstallmentFeePercentage),
-		AdminFee:          req.OTR * float64(constant.AdminFeePercentage),
+		InstallmentAmount: req.OTR * float64(constant.InstallmentFeePercentage), //? implement A04: Insecure Design
+		AdminFee:          req.OTR * float64(constant.AdminFeePercentage),       //? implement A04: Insecure Design
 		TotalPaid:         0,
 		AssetsName:        req.AssetsName,
 	}

@@ -27,6 +27,7 @@ func NewCustomerRepository(db *gorm.DB) CustomerRepository {
 
 func (r *customerRepository) FindById(ctx context.Context, id uint) (*model.Customer, error) {
 	var customer model.Customer
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&customer).Error
 	if err != nil {
 		r.log.Error().Err(err).Uint("id", id).Msg("failed to find customer by id")

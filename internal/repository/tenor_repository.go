@@ -27,6 +27,7 @@ func NewTenorRepository(db *gorm.DB) TenorRepository {
 
 func (r *tenorRepository) FindByCustomerId(ctx context.Context, customerId uint) ([]model.Tenor, error) {
 	var tenors []model.Tenor
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("customer_id = ?", customerId).Find(&tenors).Error
 	if err != nil {
 		r.log.Error().Err(err).Uint("customer_id", customerId).Msg("failed to find tenors by customer id")

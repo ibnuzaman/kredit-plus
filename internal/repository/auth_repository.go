@@ -28,6 +28,7 @@ func NewAuthRepository(db *gorm.DB) AuthRepository {
 
 func (r *authRepository) FindByEmail(ctx context.Context, email string) (*model.Customer, error) {
 	var customer model.Customer
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("email = ?", email).First(&customer).Error
 	if err != nil {
 		r.log.Error().Err(err).Msg("failed to find customer by email")
@@ -38,6 +39,7 @@ func (r *authRepository) FindByEmail(ctx context.Context, email string) (*model.
 
 func (r *authRepository) FindById(ctx context.Context, id int) (*model.Customer, error) {
 	var customer model.Customer
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&customer).Error
 	if err != nil {
 		r.log.Error().Err(err).Msg("failed to find customer by id")

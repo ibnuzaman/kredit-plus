@@ -31,6 +31,7 @@ func (r *transactionRepository) FindByCustomerId(ctx context.Context, customerId
 	var transactions []model.Transaction
 
 	limit, offset := limitOffset(page, perPage)
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("customer_id = ?", customerId).Offset(offset).Limit(limit).Find(&transactions).Error
 	if err != nil {
 		r.log.Error().Err(err).Uint("customer_id", customerId).Uint("page", page).Uint("per_page", perPage).Msg("Failed to find transactions by customer ID")
@@ -43,6 +44,7 @@ func (r *transactionRepository) FindByCustomerId(ctx context.Context, customerId
 func (r *transactionRepository) FindByLoanId(ctx context.Context, loanId uint) ([]model.Transaction, error) {
 	var transactions []model.Transaction
 
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("loan_id = ?", loanId).Find(&transactions).Error
 	if err != nil {
 		r.log.Error().Err(err).Uint("loan_id", loanId).Msg("Failed to find transactions by loan ID")
@@ -59,6 +61,7 @@ func (r *transactionRepository) Create(ctx context.Context, transaction *model.T
 			return err
 		}
 
+		//? implement A03: Injection
 		if err := tx.Model(&model.Loan{}).Where("id = ?", transaction.LoanID).Update("total_paid", gorm.Expr("total_paid + ?", 1)).Error; err != nil {
 			r.log.Error().Err(err).Uint("loan_id", transaction.LoanID).Msg("Failed to update total paid for loan")
 			return err

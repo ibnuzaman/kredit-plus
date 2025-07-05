@@ -32,6 +32,7 @@ func (r *loanRepository) FindByCustomerId(ctx context.Context, customerId, page,
 	var loans []model.Loan
 
 	limit, offset := limitOffset(page, perPage)
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("customer_id = ?", customerId).Offset(offset).Limit(limit).Find(&loans).Error
 	if err != nil {
 		r.log.Error().Err(err).Uint("customer_id", customerId).Msg("failed to find loans by customer id")
@@ -43,6 +44,7 @@ func (r *loanRepository) FindByCustomerId(ctx context.Context, customerId, page,
 
 func (r *loanRepository) GetLastLoanByCustomerId(ctx context.Context, customerId uint) (*model.Loan, error) {
 	var loan model.Loan
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("customer_id = ?", customerId).Order("created_at DESC").Limit(1).First(&loan).Error
 	if err != nil {
 		r.log.Error().Err(err).Uint("customer_id", customerId).Msg("failed to get last loan by customer id")
@@ -53,6 +55,7 @@ func (r *loanRepository) GetLastLoanByCustomerId(ctx context.Context, customerId
 
 func (r *loanRepository) GetById(ctx context.Context, id uint) (*model.Loan, error) {
 	var loan model.Loan
+	//? implement A03: Injection
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&loan).Error
 	if err != nil {
 		r.log.Error().Err(err).Uint("loan_id", id).Msg("failed to get loan by id")

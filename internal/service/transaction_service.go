@@ -50,6 +50,7 @@ func (s *transactionService) Create(ctx context.Context, customerId uint, req mo
 		s.exception.UnprocessableEntity("You have fully paid this loan")
 	}
 
+	//? implement A04: Insecure Design
 	totalAmount := loan.OTR + loan.InstallmentAmount + loan.AdminFee
 	interestAmount := totalAmount * float64(constant.InterestPercentage)
 	totalAmountPerMonth := totalAmount / float64(loan.TenorMonths)
