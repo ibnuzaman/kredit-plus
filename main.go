@@ -6,6 +6,7 @@ import (
 	"kredit-plus/database"
 	"kredit-plus/internal"
 	"kredit-plus/logger"
+	"kredit-plus/validation"
 )
 
 func init() {
@@ -14,6 +15,7 @@ func init() {
 	conf := config.Get()
 	logger.Init(conf)
 	database.Init(ctx, conf)
+	validation.Init()
 }
 
 // @title						BE Kredit Plus

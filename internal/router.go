@@ -16,6 +16,7 @@ type Router interface {
 	Home(handler handler.HomeHandler)
 	Auth(handler handler.AuthHandler)
 	Customer(handler handler.CustomerHandler)
+	Loan(handler handler.LoanHandler)
 	Transaction(handler handler.TransactionHandler)
 }
 
@@ -40,6 +41,12 @@ func (r *router) Customer(handler handler.CustomerHandler) {
 	customer := r.app.Group("v1/customer")
 	customer.Get("information", r.mid.Auth(), handler.Information)
 	customer.Get("tenor", r.mid.Auth(), handler.Tenor)
+}
+
+func (r *router) Loan(handler handler.LoanHandler) {
+	loan := r.app.Group("v1/loan")
+	loan.Get("", r.mid.Auth(), handler.List)
+	loan.Post("", r.mid.Auth(), handler.Create)
 }
 
 func (r *router) Transaction(handler handler.TransactionHandler) {

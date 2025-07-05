@@ -196,6 +196,126 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/loan": {
+            "get": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    }
+                ],
+                "description": "Retrieves available loans.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Get loan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Per Page",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful loan list response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.BaseResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.LoanResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    }
+                ],
+                "description": "Creates a new loan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loan"
+                ],
+                "summary": "Create loan",
+                "parameters": [
+                    {
+                        "description": "Create Loan Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateLoanRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful loan creation response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error response",
+                        "schema": {
+                            "$ref": "#/definitions/model.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/transaction": {
             "get": {
                 "security": [
@@ -287,6 +407,84 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CreateLoanRequest": {
+            "type": "object",
+            "required": [
+                "assets_name",
+                "otr",
+                "tenor_months"
+            ],
+            "properties": {
+                "assets_name": {
+                    "type": "string",
+                    "example": "Credit Motorcycle"
+                },
+                "otr": {
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 15000000
+                },
+                "tenor_months": {
+                    "type": "integer",
+                    "maximum": 32,
+                    "minimum": 1,
+                    "example": 18
+                }
+            }
+        },
+        "model.Customer": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "date_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "identity_file": {
+                    "type": "string"
+                },
+                "legal_name": {
+                    "type": "string"
+                },
+                "loans": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Loan"
+                    }
+                },
+                "nik": {
+                    "type": "string"
+                },
+                "place_birth": {
+                    "type": "string"
+                },
+                "salary": {
+                    "type": "number"
+                },
+                "selfie_file": {
+                    "type": "string"
+                },
+                "tenors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tenor"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.CustomerResponse": {
             "type": "object",
             "properties": {
@@ -322,6 +520,85 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Loan": {
+            "type": "object",
+            "properties": {
+                "admin_fee": {
+                    "type": "number"
+                },
+                "assets_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer": {
+                    "$ref": "#/definitions/model.Customer"
+                },
+                "customer_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "installment_amount": {
+                    "type": "number"
+                },
+                "otr": {
+                    "type": "number"
+                },
+                "tenor_months": {
+                    "type": "integer"
+                },
+                "total_paid": {
+                    "type": "integer"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Transaction"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.LoanResponse": {
+            "type": "object",
+            "properties": {
+                "admin_fee": {
+                    "type": "number"
+                },
+                "assets_name": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "installment_amount": {
+                    "type": "number"
+                },
+                "otr": {
+                    "type": "number"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "tenor_months": {
+                    "type": "integer"
+                },
+                "total_amount": {
+                    "type": "number"
+                },
+                "total_paid": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.LoginRequest": {
             "type": "object",
             "required": [
@@ -333,6 +610,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Tenor": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer": {
+                    "$ref": "#/definitions/model.Customer"
+                },
+                "customer_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "month": {
+                    "type": "integer"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -354,34 +657,22 @@ const docTemplate = `{
         "model.Transaction": {
             "type": "object",
             "properties": {
-                "admin_fee": {
+                "amount": {
                     "type": "number"
-                },
-                "assets_name": {
-                    "type": "string"
-                },
-                "contract_number": {
-                    "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
-                "customer_id": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "integer"
-                },
-                "installment_amount": {
-                    "type": "number"
                 },
                 "interest_amount": {
                     "type": "number"
                 },
-                "otr": {
-                    "type": "number"
+                "loan": {
+                    "$ref": "#/definitions/model.Loan"
                 },
-                "tenor_months": {
+                "loan_id": {
                     "type": "integer"
                 },
                 "updated_at": {

@@ -36,7 +36,7 @@ func (s *customerService) Tenor(ctx context.Context, customerId uint) []model.Te
 	tenors, err := s.tenorRepo.FindByCustomerId(ctx, customerId)
 	s.exception.Error(err)
 
-	var res []model.TenorResponse
+	res := []model.TenorResponse{}
 	for _, tenor := range tenors {
 		res = append(res, tenor.ToResponse())
 	}

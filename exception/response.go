@@ -7,8 +7,10 @@ import (
 	"kredit-plus/constant"
 	"kredit-plus/internal/model"
 	"kredit-plus/logger"
+	"kredit-plus/validation"
 	"runtime"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
@@ -23,9 +25,13 @@ type Exception interface {
 	ErrorSkipNotFound(err error)
 	BadRequest(messages ...string)
 	BadRequestErr(err error, messages ...string)
+	ValidateStruct(dataSet interface{}, fullPathPrefix ...bool)
 	Unauthorized(messages ...string)
 	UnauthorizedErr(err error, messages ...string)
 	UnauthorizedBool(isError bool, messages ...string)
+	UnprocessableEntity(messages ...string)
+	UnprocessableEntityErr(err error, messages ...string)
+	UnprocessableEntityBool(isError bool, messages ...string)
 }
 
 func NewException() Exception {
@@ -88,6 +94,48 @@ func (e *exception) BadRequestErr(err error, messages ...string) {
 	}
 }
 
+func (e *exception) baseErrorValidation(data map[string]string, messages ...string) {
+	e.log.Error().Str("caller", e.getCaller(4)).Msg("CLIENT ERROR")
+	panic(model.NewErrorMessage(fiber.StatusBadRequest, e.getMessage(constant.MsgErrorValidation, messages...), data))
+}
+
+func (e *exception) ValidateStruct(dataSet interface{}, fullPathPrefix ...bool) {
+	err := validation.Get().Struct(dataSet)
+	if err == nil {
+		return
+	}
+
+	removePrefix := func(s string) string {
+		for i := 0; i < len(s); i++ {
+			if s[i] == '.' {
+				return s[i+1:]
+			}
+		}
+		return s
+	}
+
+	if len(fullPathPrefix) > 0 {
+		removePrefix = func(s string) string {
+			return s
+		}
+	}
+
+	var ve validator.ValidationErrors
+	if errors.As(err, &ve) {
+		validates := make(map[string]string, len(ve))
+		translate := validation.GetTranslator()
+		for _, fe := range ve {
+			key := removePrefix(fe.Namespace())
+			validates[key] = fe.Translate(translate)
+		}
+
+		e.baseErrorValidation(validates)
+		return
+	}
+
+	e.baseError(err)
+}
+
 func (e *exception) baseUnauthorized(messages ...string) {
 	e.log.Warn().Str("caller", e.getCaller(3)).Msg("UNAUTHORIZED")
 	panic(model.NewErrorMessage(fiber.StatusUnauthorized, e.getMessage(constant.MsgUnauthorized, messages...), nil))
@@ -106,5 +154,26 @@ func (e *exception) UnauthorizedErr(err error, messages ...string) {
 func (e *exception) UnauthorizedBool(isError bool, messages ...string) {
 	if isError {
 		e.baseUnauthorized(messages...)
+	}
+}
+
+func (e *exception) baseUnprocessableEntity(messages ...string) {
+	e.log.Warn().Str("caller", e.getCaller(3)).Msg("UNPROCESSABLE_ENTITY")
+	panic(model.NewErrorMessage(fiber.StatusUnprocessableEntity, e.getMessage(constant.MsgUnprocessableEntity, messages...), nil))
+}
+
+func (e *exception) UnprocessableEntity(messages ...string) {
+	e.baseUnprocessableEntity(messages...)
+}
+
+func (e *exception) UnprocessableEntityErr(err error, messages ...string) {
+	if err != nil {
+		e.baseUnprocessableEntity(messages...)
+	}
+}
+
+func (e *exception) UnprocessableEntityBool(isError bool, messages ...string) {
+	if isError {
+		e.baseUnprocessableEntity(messages...)
 	}
 }

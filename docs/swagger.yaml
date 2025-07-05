@@ -16,6 +16,60 @@ definitions:
         example: Message!
         type: string
     type: object
+  model.CreateLoanRequest:
+    properties:
+      assets_name:
+        example: Credit Motorcycle
+        type: string
+      otr:
+        example: 15000000
+        minimum: 0
+        type: number
+      tenor_months:
+        example: 18
+        maximum: 32
+        minimum: 1
+        type: integer
+    required:
+    - assets_name
+    - otr
+    - tenor_months
+    type: object
+  model.Customer:
+    properties:
+      created_at:
+        type: string
+      date_birth:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      identity_file:
+        type: string
+      legal_name:
+        type: string
+      loans:
+        items:
+          $ref: '#/definitions/model.Loan'
+        type: array
+      nik:
+        type: string
+      place_birth:
+        type: string
+      salary:
+        type: number
+      selfie_file:
+        type: string
+      tenors:
+        items:
+          $ref: '#/definitions/model.Tenor'
+        type: array
+      updated_at:
+        type: string
+    type: object
   model.CustomerResponse:
     properties:
       date_birth:
@@ -39,6 +93,58 @@ definitions:
       selfie_file:
         type: string
     type: object
+  model.Loan:
+    properties:
+      admin_fee:
+        type: number
+      assets_name:
+        type: string
+      created_at:
+        type: string
+      customer:
+        $ref: '#/definitions/model.Customer'
+      customer_id:
+        type: integer
+      id:
+        type: integer
+      installment_amount:
+        type: number
+      otr:
+        type: number
+      tenor_months:
+        type: integer
+      total_paid:
+        type: integer
+      transactions:
+        items:
+          $ref: '#/definitions/model.Transaction'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  model.LoanResponse:
+    properties:
+      admin_fee:
+        type: number
+      assets_name:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: integer
+      installment_amount:
+        type: number
+      otr:
+        type: number
+      start_date:
+        type: string
+      tenor_months:
+        type: integer
+      total_amount:
+        type: number
+      total_paid:
+        type: integer
+    type: object
   model.LoginRequest:
     properties:
       email:
@@ -48,6 +154,23 @@ definitions:
     required:
     - email
     - password
+    type: object
+  model.Tenor:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      customer:
+        $ref: '#/definitions/model.Customer'
+      customer_id:
+        type: integer
+      id:
+        type: integer
+      month:
+        type: integer
+      updated_at:
+        type: string
     type: object
   model.TenorResponse:
     properties:
@@ -60,25 +183,17 @@ definitions:
     type: object
   model.Transaction:
     properties:
-      admin_fee:
+      amount:
         type: number
-      assets_name:
-        type: string
-      contract_number:
-        type: string
       created_at:
         type: string
-      customer_id:
-        type: integer
       id:
         type: integer
-      installment_amount:
-        type: number
       interest_amount:
         type: number
-      otr:
-        type: number
-      tenor_months:
+      loan:
+        $ref: '#/definitions/model.Loan'
+      loan_id:
         type: integer
       updated_at:
         type: string
@@ -196,6 +311,80 @@ paths:
       summary: Get customer tenor
       tags:
       - customer
+  /v1/loan:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves available loans.
+      parameters:
+      - default: 1
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Per Page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful loan list response
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.BaseResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.LoanResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+      security:
+      - AccessToken: []
+      summary: Get loan
+      tags:
+      - loan
+    post:
+      consumes:
+      - application/json
+      description: Creates a new loan.
+      parameters:
+      - description: Create Loan Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateLoanRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful loan creation response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "400":
+          description: Bad request error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "401":
+          description: Unauthorized error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+        "422":
+          description: Validation error response
+          schema:
+            $ref: '#/definitions/model.BaseResponse'
+      security:
+      - AccessToken: []
+      summary: Create loan
+      tags:
+      - loan
   /v1/transaction:
     get:
       consumes:

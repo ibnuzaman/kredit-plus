@@ -85,7 +85,7 @@ func Init(ctx context.Context, conf *config.Config) {
 
 func autoMigrate(log *zerolog.Logger) {
 	log.Info().Msg("Auto migrating database schemas")
-	err := dbGorm.AutoMigrate(model.Customer{}, model.Tenor{}, model.Transaction{})
+	err := dbGorm.AutoMigrate(&model.Customer{}, &model.Tenor{}, &model.Loan{}, &model.Transaction{})
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to auto migrate database schemas")
 		return

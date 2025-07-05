@@ -10,7 +10,7 @@ type Tenor struct {
 	CreatedAt  time.Time `gorm:"not null" json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 
-	Customer Customer `gorm:"foreignKey:CustomerID" json:"-"`
+	Customer Customer `gorm:"foreignKey:CustomerID" json:"customer,omitempty"`
 }
 
 func (Tenor) TableName() string {
