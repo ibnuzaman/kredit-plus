@@ -172,3 +172,6 @@ logs/
 
 ### minio ###
 /start/.minio.sys
+
+### docker ###
+/docker
