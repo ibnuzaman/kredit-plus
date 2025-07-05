@@ -16,6 +16,7 @@ type Router interface {
 	Home(handler handler.HomeHandler)
 	Auth(handler handler.AuthHandler)
 	Customer(handler handler.CustomerHandler)
+	Transaction(handler handler.TransactionHandler)
 }
 
 func NewRouter(app *fiber.App, mid middleware.Middleware) Router {
@@ -39,4 +40,9 @@ func (r *router) Customer(handler handler.CustomerHandler) {
 	customer := r.app.Group("v1/customer")
 	customer.Get("information", r.mid.Auth(), handler.Information)
 	customer.Get("tenor", r.mid.Auth(), handler.Tenor)
+}
+
+func (r *router) Transaction(handler handler.TransactionHandler) {
+	transaction := r.app.Group("v1/transaction")
+	transaction.Get("", r.mid.Auth(), handler.List)
 }

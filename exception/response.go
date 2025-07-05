@@ -1,6 +1,8 @@
 package exception
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"kredit-plus/constant"
 	"kredit-plus/internal/model"
@@ -9,6 +11,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog"
+	"gorm.io/gorm"
 )
 
 type exception struct {
@@ -17,6 +20,7 @@ type exception struct {
 
 type Exception interface {
 	Error(err error)
+	ErrorSkipNotFound(err error)
 	BadRequest(messages ...string)
 	BadRequestErr(err error, messages ...string)
 	Unauthorized(messages ...string)
@@ -59,6 +63,12 @@ func (e *exception) baseError(err error) {
 
 func (e *exception) Error(err error) {
 	if err != nil {
+		e.baseError(err)
+	}
+}
+
+func (e *exception) ErrorSkipNotFound(err error) {
+	if err != nil && !(errors.Is(err, sql.ErrNoRows) || errors.Is(err, gorm.ErrRecordNotFound)) {
 		e.baseError(err)
 	}
 }

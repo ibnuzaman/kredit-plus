@@ -8,4 +8,5 @@ const (
 
 const (
 	KeyLocalsAuthUser = "auth_user"
+	DefaultPerPage    = 10
 )
